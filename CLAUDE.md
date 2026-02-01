@@ -36,10 +36,7 @@ Same tokens, just pass as env vars directly:
 ### Done
 
 - Removed Slack integration (`tools/slack-read.js`, `setup/commands/slack.md`, `@slack/web-api` from Dockerfile, Slack setup prompt from `run.sh`, Slack references from `setup/CLAUDE.md`)
-
-### To do
-
-- **Delete `scripts/sync-config-and-secrets.sh`** - no longer needed
-- **Delete `scripts/clean-secrets.sh`** - replace with simpler cleanup if needed
-- **Rewrite `scripts/run.sh`** - first-run interactive setup, one-way secrets copy, inject env vars on `docker exec`
-- **Update Dockerfile** - document expected env vars
+- Deleted `scripts/sync-config-and-secrets.sh` and `scripts/clean-secrets.sh`
+- Rewrote `scripts/run.sh` - first-run interactive token setup, inject env vars on `docker exec`
+- Updated Dockerfile - documented expected env vars, baked in all container setup (DX plugin, Playwright MCP, aliases, status line)
+- Removed runtime `container-setup.sh` curl from `run.sh` and deleted it from `claude-code-tips` repo
