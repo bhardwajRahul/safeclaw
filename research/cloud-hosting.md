@@ -22,15 +22,15 @@ Research on running SafeClaw's Docker container in the cloud for free.
 - **Credit card:** Required
 - **SSH:** Full access, real VMs
 - **Deploy:** SSH in, install Docker, `docker run`
-- **Catches:** Signup rejection is common. ARM instance provisioning often fails due to capacity in popular regions. You manage everything yourself - updates, SSL, networking, firewall rules.
+- **Catches:** Signup rejection is common. ARM instance provisioning often fails due to capacity in popular regions. Idle instances (<20% CPU for 7 days) can be reclaimed. You manage everything yourself - updates, SSL, networking, firewall rules.
 - **SafeClaw fit:** Best for always-on SafeClaw instance. 24 GB RAM is more than enough. Full Docker support. But you're a sysadmin.
 
 ### 3. Render - easiest DX
 
-- **Always free:** 750 instance hours/month, 100 GB bandwidth, 500 build minutes
-- **Credit card:** Required
+- **Always free:** 750 instance hours/month, bandwidth counts against workspace plan (100 GB on paid Hobby, unspecified on free)
+- **Credit card:** Not required to sign up, but needed to avoid suspension if you exceed bandwidth/build limits
 - **Deploy:** Connect GitHub repo, auto-deploys on push
-- **Catches:** Services sleep after 15 min inactivity (~60s cold start). Ephemeral filesystem - all data lost on redeploy/restart/sleep. Free Postgres expires after 90 days.
+- **Catches:** Services sleep after 15 min inactivity (~60s cold start). Ephemeral filesystem - all data lost on redeploy/restart/sleep. Free Postgres expires after 30 days (not 90). No SSH on free tier.
 - **SafeClaw fit:** Easy to set up but sleep behavior and ephemeral storage are problematic for persistent memory feature.
 
 ### 4. Koyeb - no credit card needed
@@ -38,14 +38,14 @@ Research on running SafeClaw's Docker container in the cloud for free.
 - **Always free:** 0.1 vCPU, 512 MB RAM, 2 GB SSD
 - **Credit card:** Not required
 - **Deploy:** Dockerfile or pre-built image
-- **Catches:** Very low CPU (0.1 vCPU), single service only
+- **Catches:** Very low CPU (0.1 vCPU), single service only, only 2 regions (Frankfurt or Washington D.C.)
 - **SafeClaw fit:** Too small for running Claude Code + Playwright inside a container.
 
 ### 5. Hugging Face Spaces - no credit card needed
 
 - **Always free:** 2 vCPU, 16 GB RAM, supports Dockerfiles
 - **Credit card:** Not required
-- **Catches:** Sleeps after inactivity, designed for ML demos but works for any Docker app
+- **Catches:** Sleeps after 48 hours of inactivity (much better than Render's 15 min). Designed for ML demos but works for any Docker app.
 - **SafeClaw fit:** Generous specs but sleep behavior is a problem.
 
 ## Other options (not recommended)
