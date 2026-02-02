@@ -88,6 +88,10 @@ RUN claude plugin marketplace add ykdojo/claude-code-tips && \
 RUN jq '. + {hasCompletedOnboarding: true}' /home/sclaw/.claude.json > /tmp/.claude.json.tmp && \
     mv /tmp/.claude.json.tmp /home/sclaw/.claude.json
 
+# Set default model (must be after plugin install which rewrites settings.json)
+RUN jq '. + {model: "claude-opus-4-5-20251101"}' /home/sclaw/.claude/settings.json > /tmp/settings.json.tmp && \
+    mv /tmp/settings.json.tmp /home/sclaw/.claude/settings.json
+
 # Shell aliases and shortcuts
 COPY --chown=sclaw:sclaw setup/bashrc.sh /tmp/bashrc.sh
 RUN cat /tmp/bashrc.sh >> /home/sclaw/.bashrc && rm /tmp/bashrc.sh
