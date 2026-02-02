@@ -56,14 +56,9 @@ The server does not replace Claude Code's UI or manage conversations directly. I
 
 ### Claude Code
 
-The container has its own auth - separate from the host's. On first run, log in via `/login` in the web terminal. `run.sh` then backs up two files to `~/.config/safeclaw/` on the host:
+Token from `claude setup-token` is stored in `~/.config/safeclaw/.secrets/claude_oauth_token` on the host. `run.sh` injects it as `CLAUDE_CODE_OAUTH_TOKEN` via `docker exec -e`. The ttyd wrapper script writes it to a file that `.bashrc` sources, so tmux shells pick it up.
 
-- `.claude.json` - account info (oauthAccount)
-- `.credentials.json` - OAuth token (claudeAiOauth)
-
-When the container is recreated (after a build), it restores both files from that backup.
-
-Why not `CLAUDE_CODE_OAUTH_TOKEN`? The env var works for `-p` (print) mode but not interactive mode - it shows the login screen anyway. This is a known issue. Syncing the auth file is the reliable approach.
+The Dockerfile sets `hasCompletedOnboarding: true` in `.claude.json` to skip the onboarding flow. Without this, interactive mode ignores the token and shows the login screen ([known issue](https://github.com/anthropics/claude-code/issues/8938)). Known limitation: the token from `setup-token` has limited scopes (`user:inference` only), so `/usage` doesn't work and the status bar shows "Claude API" instead of the subscription name ([#11985](https://github.com/anthropics/claude-code/issues/11985)). Chat works fine.
 
 ### GitHub CLI
 

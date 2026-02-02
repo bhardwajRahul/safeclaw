@@ -83,6 +83,11 @@ RUN claude plugin marketplace add ykdojo/claude-code-tips && \
     claude plugin install dx@ykdojo && \
     claude mcp add playwright -- playwright-mcp --headless --browser chromium --no-sandbox
 
+# Skip onboarding so CLAUDE_CODE_OAUTH_TOKEN works in interactive mode
+# See: https://github.com/anthropics/claude-code/issues/8938
+RUN jq '. + {hasCompletedOnboarding: true}' /home/sclaw/.claude.json > /tmp/.claude.json.tmp && \
+    mv /tmp/.claude.json.tmp /home/sclaw/.claude.json
+
 # Shell aliases and shortcuts
 COPY --chown=sclaw:sclaw setup/bashrc.sh /tmp/bashrc.sh
 RUN cat /tmp/bashrc.sh >> /home/sclaw/.bashrc && rm /tmp/bashrc.sh

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Start/reuse container, sync auth, start ttyd web terminal
+# Start/reuse container, inject auth tokens, start ttyd web terminal
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONTAINER_NAME="safeclaw"
@@ -24,37 +24,35 @@ else
     docker run -d --ipc=host --name "$CONTAINER_NAME" -p 7681:7681 safeclaw sleep infinity > /dev/null
 fi
 
-# === Sync Claude Code auth ===
-# Auth requires two files: .claude.json (account info) and .claude/.credentials.json (OAuth token)
-# On fresh containers, restore from host backup. On existing containers, save to host.
+# === Claude Code token setup ===
 
-SAFECLAW_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/safeclaw"
-HOST_CLAUDE_JSON="$SAFECLAW_DIR/.claude.json"
-HOST_CREDENTIALS="$SAFECLAW_DIR/.credentials.json"
-CONTAINER_CLAUDE_JSON="/home/sclaw/.claude.json"
-CONTAINER_CREDENTIALS="/home/sclaw/.claude/.credentials.json"
+mkdir -p "$SECRETS_DIR"
 
-container_has_auth=false
-docker exec "$CONTAINER_NAME" test -f "$CONTAINER_CREDENTIALS" 2>/dev/null && container_has_auth=true
-
-if [ -f "$HOST_CREDENTIALS" ] && [ "$container_has_auth" = false ]; then
-    echo "Restoring Claude Code auth into container..."
-    docker cp "$HOST_CLAUDE_JSON" "$CONTAINER_NAME:$CONTAINER_CLAUDE_JSON"
-    docker exec -u root "$CONTAINER_NAME" chown sclaw:sclaw "$CONTAINER_CLAUDE_JSON"
-    docker cp "$HOST_CREDENTIALS" "$CONTAINER_NAME:$CONTAINER_CREDENTIALS"
-    docker exec -u root "$CONTAINER_NAME" chown sclaw:sclaw "$CONTAINER_CREDENTIALS"
-elif [ "$container_has_auth" = true ]; then
-    echo "Saving Claude Code auth to host..."
-    mkdir -p "$SAFECLAW_DIR"
-    docker cp "$CONTAINER_NAME:$CONTAINER_CLAUDE_JSON" "$HOST_CLAUDE_JSON"
-    docker cp "$CONTAINER_NAME:$CONTAINER_CREDENTIALS" "$HOST_CREDENTIALS"
-else
-    echo "No Claude Code auth found. Log in with /login through the web terminal."
+if [ ! -f "$SECRETS_DIR/claude_oauth_token" ]; then
+    echo ""
+    echo "=== Claude Code setup ==="
+    echo ""
+    echo "No Claude Code token found. Let's set one up."
+    echo ""
+    echo "Run this command in another terminal:"
+    echo ""
+    echo "  claude setup-token"
+    echo ""
+    echo "It will generate a long-lived OAuth token (valid for 1 year)."
+    echo "Paste the token below."
+    echo ""
+    while true; do
+        read -p "Token: " claude_token
+        if [ -n "$claude_token" ]; then
+            echo "$claude_token" > "$SECRETS_DIR/claude_oauth_token"
+            echo "Saved to $SECRETS_DIR/claude_oauth_token"
+            break
+        fi
+        echo "Token is required. Please run 'claude setup-token' and paste the result."
+    done
 fi
 
 # === GitHub CLI token setup ===
-
-mkdir -p "$SECRETS_DIR"
 
 if [ ! -f "$SECRETS_DIR/gh_token" ]; then
     echo ""
@@ -84,8 +82,11 @@ if [ ! -f "$SECRETS_DIR/gh_token" ]; then
     fi
 fi
 
-# Build env var flags for GH_TOKEN
+# Build env var flags
 ENV_FLAGS=""
+if [ -f "$SECRETS_DIR/claude_oauth_token" ]; then
+    ENV_FLAGS="$ENV_FLAGS -e CLAUDE_CODE_OAUTH_TOKEN=$(cat "$SECRETS_DIR/claude_oauth_token")"
+fi
 if [ -f "$SECRETS_DIR/gh_token" ]; then
     ENV_FLAGS="$ENV_FLAGS -e GH_TOKEN=$(cat "$SECRETS_DIR/gh_token")"
 fi
