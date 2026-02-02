@@ -54,31 +54,32 @@ The server does not replace Claude Code's UI or manage conversations directly. I
 
 ## Authentication
 
-Tokens are stored in `~/.config/safeclaw/.secrets/` on the host. `run.sh` reads them and injects as env vars on each `docker exec`.
+### Claude Code
 
-| File | Env var | How to generate |
-|------|---------|-----------------|
-| `claude_oauth_token` | `CLAUDE_CODE_OAUTH_TOKEN` | `claude setup-token` (valid 1 year, uses Claude subscription) |
-| `gh_token` | `GH_TOKEN` | Create a separate GitHub account for SafeClaw, log in with `gh auth login`, then `gh auth token` |
+The container has its own auth - separate from the host's. On first run, log in via `/login` in the web terminal. `run.sh` then backs up two files to `~/.config/safeclaw/` on the host:
 
-### How it works (in `scripts/run.sh`)
+- `.claude.json` - account info (oauthAccount)
+- `.credentials.json` - OAuth token (claudeAiOauth)
 
-1. Check `~/.config/safeclaw/.secrets/` for each token file
-2. If missing, walk the user through generating it interactively, save to host
-3. On every run, inject as env vars when entering the container:
-   `docker exec -e CLAUDE_CODE_OAUTH_TOKEN=$(cat ...) -e GH_TOKEN=$(cat ...) -it safeclaw /bin/bash`
+When the container is recreated (after a build), it restores both files from that backup.
 
-Tokens only live on the host filesystem. Nothing is copied into the container.
+Why not `CLAUDE_CODE_OAUTH_TOKEN`? The env var works for `-p` (print) mode but not interactive mode - it shows the login screen anyway. This is a known issue. Syncing the auth file is the reliable approach.
+
+### GitHub CLI
+
+`GH_TOKEN` is stored in `~/.config/safeclaw/.secrets/gh_token` on the host. `run.sh` injects it as an env var via `docker exec -e`. The ttyd wrapper script writes it to a file that `.bashrc` sources, so tmux shells pick it up.
+
+We recommend creating a separate GitHub account for SafeClaw so you can scope its permissions independently.
 
 ## Implementation status
 
 ### Done
 
-- Token-based auth (run.sh interactive setup, env var injection)
 - All container setup baked into Dockerfile (DX plugin, Playwright MCP, aliases, status line)
+- ttyd + tmux web terminal (port 7681)
+- Claude Code auth via .claude.json sync from host
+- GitHub auth via GH_TOKEN env var
 
 ### To do
 
-- Add ttyd to Dockerfile
-- Update run.sh to map port 7681 and start ttyd inside the container
 - Node server for session management and Discord notifications

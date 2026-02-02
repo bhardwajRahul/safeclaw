@@ -1,3 +1,6 @@
+# Load SafeClaw env vars (tokens written by ttyd-wrapper.sh)
+[ -f ~/.safeclaw-env ] && source ~/.safeclaw-env
+
 # Claude Code aliases
 alias c='claude'
 alias cs='claude --dangerously-skip-permissions'

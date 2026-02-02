@@ -25,7 +25,7 @@ RUN apt-get update && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list && \
     apt-get update && \
     apt-get install -y gh && \
-    apt-get install -y --no-install-recommends git openssh-client jq tmux && \
+    apt-get install -y --no-install-recommends git openssh-client jq tmux ttyd && \
     npm install -g yarn && \
     # clean apt cache
     rm -rf /var/lib/apt/lists/* && \
@@ -86,6 +86,10 @@ RUN claude plugin marketplace add ykdojo/claude-code-tips && \
 # Shell aliases and shortcuts
 COPY --chown=sclaw:sclaw setup/bashrc.sh /tmp/bashrc.sh
 RUN cat /tmp/bashrc.sh >> /home/sclaw/.bashrc && rm /tmp/bashrc.sh
+
+# ttyd wrapper script
+COPY --chown=sclaw:sclaw setup/ttyd-wrapper.sh /home/sclaw/ttyd-wrapper.sh
+RUN chmod +x /home/sclaw/ttyd-wrapper.sh
 
 # === PATCH Claude Code ===
 
