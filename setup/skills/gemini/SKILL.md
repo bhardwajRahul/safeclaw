@@ -1,3 +1,8 @@
+---
+name: gemini
+description: Use Gemini CLI for web research, multimodal tasks (PDFs, images), or as a second opinion.
+---
+
 # Gemini CLI
 
 Use Gemini for web research, multimodal tasks (PDFs, images), or as a second opinion.
