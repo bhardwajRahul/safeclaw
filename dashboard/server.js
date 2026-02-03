@@ -7,33 +7,60 @@ const PORT = 7680;
 const TEMPLATE_PATH = path.join(__dirname, 'template.html');
 
 function getSessions() {
+    const sessions = [];
+
+    // Get all safeclaw containers (running and stopped)
     try {
         const output = execSync(
-            `docker ps --format '{{.Names}}\\t{{.Ports}}\\t{{.Mounts}}' --filter 'name=safeclaw'`,
+            `docker ps -a --format '{{.Names}}\\t{{.Status}}' --filter 'name=safeclaw'`,
             { encoding: 'utf8' }
         );
 
-        return output.trim().split('\n').filter(Boolean).map(line => {
-            const [name, ports, mounts] = line.split('\t');
-            const portMatch = ports.match(/:(\d+)->7681/);
-            const port = portMatch ? portMatch[1] : null;
+        output.trim().split('\n').filter(Boolean).forEach(line => {
+            const [name, status] = line.split('\t');
+            const isRunning = status.startsWith('Up');
 
-            let volume = '';
+            let port = null;
+            let volume = '-';
+
+            if (isRunning) {
+                // Get port for running containers
+                try {
+                    const portOutput = execSync(
+                        `docker ps --format '{{.Ports}}' --filter 'name=^${name}$'`,
+                        { encoding: 'utf8' }
+                    ).trim();
+                    const portMatch = portOutput.match(/:(\d+)->7681/);
+                    port = portMatch ? portMatch[1] : null;
+                } catch (e) {}
+            }
+
+            // Get volume mount
             try {
                 const inspect = execSync(
                     `docker inspect ${name} --format '{{range .Mounts}}{{if eq .Type "bind"}}{{.Source}}:{{.Destination}}{{end}}{{end}}'`,
                     { encoding: 'utf8' }
                 ).trim();
                 volume = inspect || '-';
-            } catch (e) {
-                volume = '-';
-            }
+            } catch (e) {}
 
-            return { name, port, url: port ? `http://localhost:${port}` : null, volume };
-        }).filter(s => s.port);
-    } catch (e) {
-        return [];
-    }
+            sessions.push({
+                name,
+                port,
+                url: port ? `http://localhost:${port}` : null,
+                volume,
+                active: isRunning
+            });
+        });
+    } catch (e) {}
+
+    // Sort: active first, then by name
+    sessions.sort((a, b) => {
+        if (a.active !== b.active) return b.active - a.active;
+        return a.name.localeCompare(b.name);
+    });
+
+    return sessions;
 }
 
 function stopContainer(name) {
@@ -47,19 +74,30 @@ function stopContainer(name) {
 
 function renderContent(sessions) {
     if (sessions.length === 0) {
-        return '<p class="empty">no sessions running<br><br>./scripts/run.sh -s name</p>';
+        return '<p class="empty">no sessions<br><br>./scripts/run.sh -s name</p>';
     }
 
-    const sessionRows = sessions.map(s => `
-        <tr>
-            <td>${s.name.replace('safeclaw-', '').replace('safeclaw', 'default')}</td>
-            <td><a href="${s.url}" target="_blank">${s.url}</a></td>
-            <td class="volume">${s.volume || '-'}</td>
-            <td><button class="stop-btn" onclick="stopSession('${s.name}')">stop</button></td>
-        </tr>
-    `).join('');
+    const sessionRows = sessions.map(s => {
+        const displayName = s.name.replace('safeclaw-', '').replace('safeclaw', 'default');
+        const urlCell = s.active
+            ? `<a href="${s.url}" target="_blank">${s.url}</a>`
+            : '<span class="inactive">inactive</span>';
+        const actionBtn = s.active
+            ? `<button class="stop-btn" onclick="stopSession('${s.name}')">stop</button>`
+            : '';
 
-    const iframes = sessions.map(s => `
+        return `
+        <tr class="${s.active ? '' : 'inactive-row'}">
+            <td>${displayName}</td>
+            <td>${urlCell}</td>
+            <td class="volume">${s.volume || '-'}</td>
+            <td>${actionBtn}</td>
+        </tr>
+        `;
+    }).join('');
+
+    const activeSessions = sessions.filter(s => s.active);
+    const iframes = activeSessions.map(s => `
         <div class="frame" id="frame-${s.name}">
             <div class="frame-bar">
                 <span>${s.name.replace('safeclaw-', '').replace('safeclaw', 'default')}</span>
@@ -74,7 +112,7 @@ function renderContent(sessions) {
         <thead><tr><th>Session</th><th>URL</th><th>Volume</th><th></th></tr></thead>
         <tbody>${sessionRows}</tbody>
     </table>
-    <div class="frames">${iframes}</div>
+    ${activeSessions.length > 0 ? `<div class="frames">${iframes}</div>` : ''}
     `;
 }
 

@@ -37,10 +37,26 @@
             text-decoration: none;
         }
         td a:hover { text-decoration: underline; }
+        td:nth-child(2) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         .volume {
             color: #8b949e;
             font-size: 12px;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+        table {
+            table-layout: fixed;
+        }
+        th:nth-child(1), td:nth-child(1) { width: 15%; }
+        th:nth-child(2), td:nth-child(2) { width: 25%; }
+        th:nth-child(3), td:nth-child(3) { width: 50%; }
+        th:nth-child(4), td:nth-child(4) { width: 10%; }
         .frames {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -87,6 +103,12 @@
         .stop-btn:hover {
             background: #5c4033;
             color: #c9c5c0;
+        }
+        .inactive {
+            color: #6b6560;
+        }
+        .inactive-row td {
+            opacity: 0.6;
         }
     </style>
     <script>
