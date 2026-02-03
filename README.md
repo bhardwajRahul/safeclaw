@@ -1,6 +1,6 @@
 # SafeClaw
 
-The easiest way to run Claude Code in a Docker container. Secure, cloud-ready, with sensible defaults.
+The easiest way to run Claude Code in a Docker container. Secure, isolated, with sensible defaults.
 
 See [architecture.md](architecture.md) for design details.
 
@@ -8,7 +8,6 @@ See [architecture.md](architecture.md) for design details.
 
 - **Isolated** - Claude Code runs with bypass permissions, but can't touch your host machine. A lightweight alternative to a full VM.
 - **Portable** - Works on any machine with Docker (or Podman). Same environment everywhere.
-- **Cloud-ready** - Auth via environment variables. Deploy anywhere by setting `CLAUDE_CODE_OAUTH_TOKEN` and `GH_TOKEN`.
 
 ## One session per container
 
