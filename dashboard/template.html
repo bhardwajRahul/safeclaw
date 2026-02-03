@@ -50,16 +50,9 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        table {
-            table-layout: fixed;
-        }
-        th:nth-child(1), td:nth-child(1) { width: 15%; }
-        th:nth-child(2), td:nth-child(2) { width: 25%; }
-        th:nth-child(3), td:nth-child(3) { width: 50%; }
-        th:nth-child(4), td:nth-child(4) { width: 10%; }
         .frames {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr));
             gap: 16px;
         }
         .frame {
