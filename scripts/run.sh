@@ -172,12 +172,6 @@ if [ -f "$SECRETS_DIR/GH_TOKEN" ]; then
     '
 fi
 
-# Query mode - run claude -p and exit
-if [ -n "$QUERY" ]; then
-    docker exec $ENV_FLAGS "$CONTAINER_NAME" claude -p "$QUERY"
-    exit 0
-fi
-
 # Set title based on session name
 if [ -n "$SESSION_NAME" ]; then
     TITLE="SafeClaw - ${SESSION_NAME}"
@@ -191,6 +185,30 @@ docker exec $ENV_FLAGS -d "$CONTAINER_NAME" \
 
 echo ""
 echo "SafeClaw is running at: http://localhost:${PORT}"
+
+# Query mode - send query to the interactive session
+if [ -n "$QUERY" ]; then
+    echo "Starting session and sending query..."
+    # Start tmux session directly (same as ttyd-wrapper.sh does)
+    docker exec $ENV_FLAGS "$CONTAINER_NAME" bash -c '
+        if ! tmux has-session -t main 2>/dev/null; then
+            tmux -f /dev/null new -d -s main
+            tmux set -t main status off
+            tmux set -t main mouse on
+            while IFS="=" read -r name value; do
+                tmux set-environment -t main "$name" "$value"
+            done < <(env)
+            tmux send-keys -t main "eval \"\$(tmux show-environment -s)\" && claude --dangerously-skip-permissions" Enter
+        fi
+    '
+    # Wait for Claude Code to initialize
+    sleep 3
+    # Send the query
+    docker exec "$CONTAINER_NAME" tmux send-keys -t main "$QUERY" Enter
+    sleep 0.5
+    docker exec "$CONTAINER_NAME" tmux send-keys -t main Enter
+    echo "Query sent: $QUERY"
+fi
 echo ""
 echo "To stop: docker stop $CONTAINER_NAME"
 
