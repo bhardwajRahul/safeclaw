@@ -7,17 +7,25 @@ const { execSync, spawn } = require('child_process');
 const sseClients = new Set();
 
 // Watch Docker events for safeclaw containers
-const dockerEvents = spawn('docker', ['events', '--filter', 'container=safeclaw', '--format', '{{.Action}}']);
-dockerEvents.stdout.on('data', (data) => {
-    const action = data.toString().trim();
-    if (['start', 'stop', 'die', 'destroy'].includes(action)) {
-        // Notify all SSE clients
-        sseClients.forEach(res => {
-            res.write(`data: ${action}\n\n`);
-        });
-    }
-});
-dockerEvents.on('error', () => {});
+let dockerEvents;
+function startDockerEvents() {
+    dockerEvents = spawn('docker', ['events', '--filter', 'name=safeclaw', '--format', '{{.Action}}']);
+    dockerEvents.stdout.on('data', (data) => {
+        const action = data.toString().trim();
+        if (['start', 'stop', 'die', 'destroy'].includes(action)) {
+            // Notify all SSE clients
+            sseClients.forEach(res => {
+                res.write(`data: ${action}\n\n`);
+            });
+        }
+    });
+    dockerEvents.on('error', () => {});
+    dockerEvents.on('close', () => {
+        // Restart if it dies
+        setTimeout(startDockerEvents, 1000);
+    });
+}
+startDockerEvents();
 
 const PORT = 7680;
 const TEMPLATE_PATH = path.join(__dirname, 'template.html');
