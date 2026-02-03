@@ -1,6 +1,6 @@
 # SafeClaw
 
-The easiest way to run multiple Claude Code sessions, each in its own container, with a dashboard to manage them all.
+The easiest way to run multiple Claude Code sessions, each in its own container, with a dashboard to manage them all. Quick setup with battle-tested sensible defaults.
 
 See [architecture.md](architecture.md) for design details.
 
@@ -72,7 +72,7 @@ Opens at http://localhost:7680 with:
 - Claude Code version pinned (currently 2.1.19)
 - `autoCompactEnabled: false` - prevents automatic context compaction
 - `promptSuggestionEnabled: false` - disables prompt suggestions
-- Auto half-clone hook at 85% context usage
+- Auto [half-clone](https://github.com/ykdojo/claude-code-tips#tip-43-use-half-clone-to-preserve-recent-context) hook at 85% context usage
 - Bypass permissions mode enabled (safe because it's containerized)
 
 ## Authentication
