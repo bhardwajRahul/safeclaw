@@ -54,6 +54,7 @@ Opens at http://localhost:7680 with:
 
 - `./scripts/setup-gemini.sh` - Add Gemini CLI access
 - `./scripts/setup-slack.sh` - Add Slack read access
+- `./scripts/setup-env.sh` - Add any custom environment variable
 
 ## What's included
 
@@ -97,4 +98,5 @@ You can add any additional secrets by creating files in the `.secrets/` director
 | `scripts/restart.sh` | Kill and restart the web terminal (ttyd + tmux). Use `-s name` for named sessions. |
 | `scripts/setup-gemini.sh` | Set up Gemini CLI (optional) |
 | `scripts/setup-slack.sh` | Set up Slack integration (optional) |
+| `scripts/setup-env.sh` | Add a custom environment variable |
 | `dashboard/server.js` | Web dashboard for managing multiple sessions |
