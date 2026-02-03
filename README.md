@@ -9,8 +9,6 @@ See [architecture.md](architecture.md) for design details.
 - **Isolated** - Claude Code runs with bypass permissions, but can't touch your host machine. A lightweight alternative to a full VM.
 - **Portable** - Works on any machine with Docker (or Podman). Same environment everywhere.
 - **Cloud-ready** - Auth via environment variables. Deploy anywhere by setting `CLAUDE_CODE_OAUTH_TOKEN` and `GH_TOKEN`.
-- **Batteries included** - Claude Code, GitHub CLI, Playwright MCP, and useful plugins pre-installed.
-- **Sensible defaults** - Auto-compact disabled, prompt suggestions disabled, auto half-clone at 85% context.
 
 ## Quick start
 
