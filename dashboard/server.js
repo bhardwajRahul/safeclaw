@@ -72,6 +72,15 @@ function stopContainer(name) {
     }
 }
 
+function deleteContainer(name) {
+    try {
+        execSync(`docker rm ${name}`, { encoding: 'utf8' });
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 function renderContent(sessions) {
     if (sessions.length === 0) {
         return '<p class="empty">no sessions<br><br>./scripts/run.sh -s name</p>';
@@ -84,7 +93,7 @@ function renderContent(sessions) {
             : '<span class="inactive">inactive</span>';
         const actionBtn = s.active
             ? `<button class="stop-btn" onclick="stopSession('${s.name}')">stop</button>`
-            : '';
+            : `<button class="delete-btn" onclick="deleteSession('${s.name}')">delete</button>`;
 
         return `
         <tr class="${s.active ? '' : 'inactive-row'}">
@@ -128,6 +137,15 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const { name } = JSON.parse(body);
             const success = stopContainer(name);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success }));
+        });
+    } else if (url.pathname === '/api/delete' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            const { name } = JSON.parse(body);
+            const success = deleteContainer(name);
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ success }));
         });
