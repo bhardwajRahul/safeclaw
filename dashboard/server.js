@@ -140,6 +140,7 @@ function renderContent(sessions) {
                 <tr><td><code>./scripts/run.sh -v ~/p:/home/sclaw/p</code></td><td>mount volume</td></tr>
                 <tr><td><code>./scripts/run.sh -q "question"</code></td><td>start with query</td></tr>
             </table>
+            <p class="tip">tip: press Q to exit scroll mode and resume typing</p>
         </div>`;
     }
 
