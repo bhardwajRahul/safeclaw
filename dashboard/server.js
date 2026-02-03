@@ -131,7 +131,15 @@ function startContainer(name) {
 
 function renderContent(sessions) {
     if (sessions.length === 0) {
-        return '<p class="empty">no sessions<br><br>./scripts/run.sh -s name</p>';
+        return `<div class="empty">
+            <p>no sessions</p>
+            <table class="help">
+                <tr><td><code>./scripts/run.sh</code></td><td>default session</td></tr>
+                <tr><td><code>./scripts/run.sh -s name</code></td><td>named session</td></tr>
+                <tr><td><code>./scripts/run.sh -n</code></td><td>skip opening browser</td></tr>
+                <tr><td><code>./scripts/run.sh -v ~/p:/home/sclaw/p</code></td><td>mount volume</td></tr>
+            </table>
+        </div>`;
     }
 
     const sessionRows = sessions.map(s => {
