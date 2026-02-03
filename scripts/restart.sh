@@ -15,13 +15,14 @@ docker exec "$CONTAINER_NAME" tmux kill-server 2>/dev/null
 
 sleep 1
 
-# Build env var flags
+# Build env var flags from all secrets (filename = env var name)
 ENV_FLAGS=""
-if [ -f "$SECRETS_DIR/claude_oauth_token" ]; then
-    ENV_FLAGS="$ENV_FLAGS -e CLAUDE_CODE_OAUTH_TOKEN=$(cat "$SECRETS_DIR/claude_oauth_token")"
-fi
-if [ -f "$SECRETS_DIR/gh_token" ]; then
-    ENV_FLAGS="$ENV_FLAGS -e GH_TOKEN=$(cat "$SECRETS_DIR/gh_token")"
+if [ -d "$SECRETS_DIR" ]; then
+    for secret_file in "$SECRETS_DIR"/*; do
+        [ -f "$secret_file" ] || continue
+        secret_name=$(basename "$secret_file")
+        ENV_FLAGS="$ENV_FLAGS -e $secret_name=$(cat "$secret_file")"
+    done
 fi
 
 docker exec $ENV_FLAGS -d "$CONTAINER_NAME" \
