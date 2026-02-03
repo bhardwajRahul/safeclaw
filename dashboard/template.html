@@ -184,6 +184,29 @@
                 resetButton(activeConfirm);
             }
         });
+
+        // Stop from iframe header (same logic, works with links)
+        function stopSessionLink(name, link) {
+            if (link.dataset.confirming === 'true') {
+                fetch('/api/stop', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                }).then(() => location.reload());
+                return;
+            }
+
+            if (activeConfirm && activeConfirm !== link) {
+                resetButton(activeConfirm);
+            }
+
+            link.dataset.confirming = 'true';
+            link.dataset.originalText = link.textContent;
+            link.textContent = 'stop?';
+            activeConfirm = link;
+
+            link.timeout = setTimeout(() => resetButton(link), 3000);
+        }
         function deleteSession(name, btn) {
             // If already confirming, do the delete
             if (btn.dataset.confirming === 'true') {

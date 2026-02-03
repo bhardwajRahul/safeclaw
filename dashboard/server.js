@@ -159,6 +159,7 @@ function renderContent(sessions) {
             <div class="frame-bar">
                 <span>${s.name.replace('safeclaw-', '').replace('safeclaw', 'default')}</span>
                 <div class="frame-actions">
+                    <a href="#" class="frame-stop" onclick="stopSessionLink('${s.name}', this); return false;">stop</a>
                     <a href="#" onclick="document.querySelector('#frame-${s.name} iframe').src='${s.url}'; return false;">refresh</a>
                     <a href="${s.url}" target="_blank">open</a>
                 </div>
