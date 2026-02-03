@@ -10,6 +10,12 @@ See [architecture.md](architecture.md) for design details.
 - **Portable** - Works on any machine with Docker (or Podman). Same environment everywhere.
 - **Cloud-ready** - Auth via environment variables. Deploy anywhere by setting `CLAUDE_CODE_OAUTH_TOKEN` and `GH_TOKEN`.
 
+## One session per container
+
+Each Claude Code session runs in its own container. Spin up as many as you need - they're isolated from each other and start in seconds. Run different research tasks, projects, or experiments in parallel without interference.
+
+Conversation syncing across sessions is on the roadmap.
+
 ## Quick start
 
 ```bash
