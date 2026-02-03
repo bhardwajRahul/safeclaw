@@ -6,8 +6,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-            background: #0d1117;
-            color: #c9d1d9;
+            background: #141210;
+            color: #c9c5c0;
             padding: 24px;
         }
         h1 {
@@ -25,7 +25,7 @@
         th, td {
             padding: 8px 12px;
             text-align: left;
-            border-bottom: 1px solid #30363d;
+            border-bottom: 1px solid #2a2724;
         }
         th {
             color: #8b949e;
@@ -47,14 +47,14 @@
             gap: 16px;
         }
         .frame {
-            background: #161b22;
-            border: 1px solid #30363d;
+            background: #1c1917;
+            border: 1px solid #2a2724;
             border-radius: 6px;
             overflow: hidden;
         }
         .frame-bar {
             padding: 8px 12px;
-            border-bottom: 1px solid #30363d;
+            border-bottom: 1px solid #2a2724;
             display: flex;
             justify-content: space-between;
             font-size: 12px;
@@ -74,7 +74,32 @@
             padding: 40px;
             text-align: center;
         }
+        .stop-btn {
+            background: transparent;
+            border: 1px solid #5c4033;
+            color: #a08070;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        .stop-btn:hover {
+            background: #5c4033;
+            color: #c9c5c0;
+        }
     </style>
+    <script>
+        async function stopSession(name) {
+            if (!confirm(`Stop ${name}?`)) return;
+            await fetch('/api/stop', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            location.reload();
+        }
+    </script>
 </head>
 <body>
     <h1><span>safeclaw</span> <em>sessions</em></h1>
