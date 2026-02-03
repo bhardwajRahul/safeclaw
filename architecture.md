@@ -49,10 +49,6 @@ Known limitation: the token from `setup-token` has limited scopes (`user:inferen
 
 We recommend creating a separate GitHub account for SafeClaw so you can scope its permissions independently.
 
-### Additional secrets
-
-Any file in `.secrets/` becomes an env var. For example, `SLACK_TOKEN` enables the Slack integration. Run `./scripts/setup-slack.sh` to set it up.
-
 ## Sensible defaults
 
 The container comes with these defaults baked in:
