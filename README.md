@@ -29,12 +29,12 @@ On first run, `run.sh` will prompt you to set up authentication tokens. It then 
 
 - Ubuntu 24.04
 - Node.js 24 (LTS)
-- Claude Code 2.1.19 (pinned, with optimized system prompt - ~45KB smaller)
+- Claude Code 2.1.19 (pinned, with [optimized system prompt](https://github.com/ykdojo/claude-code-tips#tip-15-slim-down-the-system-prompt) - ~45KB smaller)
 - GitHub CLI with auto-configured git user
 - Playwright MCP with Chromium
 - Gemini CLI 0.26.0 (optional - requires API key)
 - Slack read-only skill and tool (optional - requires token)
-- DX plugin, custom status line, shell aliases
+- [DX plugin](https://github.com/ykdojo/claude-code-tips#tip-44-install-the-dx-plugin), [custom status line](https://github.com/ykdojo/claude-code-tips#tip-0-customize-your-status-line), shell aliases
 - ttyd web terminal + tmux
 
 ## Authentication
