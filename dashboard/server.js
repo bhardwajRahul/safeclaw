@@ -178,10 +178,12 @@ function renderContent(sessions) {
     `).join('');
 
     return `
-    <table>
-        <thead><tr><th>Session</th><th>URL</th><th>Volume</th><th></th></tr></thead>
-        <tbody>${sessionRows}</tbody>
-    </table>
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>Session</th><th>URL</th><th>Volume</th><th></th></tr></thead>
+            <tbody>${sessionRows}</tbody>
+        </table>
+    </div>
     ${activeSessions.length > 0 ? `<div class="frames">${iframes}</div>` : ''}
     `;
 }
