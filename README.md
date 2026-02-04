@@ -59,7 +59,7 @@ Opens at http://localhost:7680 with:
 
 - Ubuntu 24.04
 - Node.js 24 (LTS)
-- Claude Code 2.1.30 (pinned, with [optimized system prompt](https://github.com/ykdojo/claude-code-tips#tip-15-slim-down-the-system-prompt) - ~45KB smaller)
+- Claude Code 2.1.30 (pinned, with [optimized system prompt](https://github.com/ykdojo/claude-code-tips#tip-15-slim-down-the-system-prompt) - starts at ~5% context instead of ~9%)
 - GitHub CLI with auto-configured git user
 - Playwright MCP with Chromium
 - Gemini CLI 0.26.0 (optional - requires API key)
@@ -73,7 +73,7 @@ Opens at http://localhost:7680 with:
 - `autoCompactEnabled: false` - prevents automatic context compaction
 - `promptSuggestionEnabled: false` - disables prompt suggestions
 - Auto [half-clone](https://github.com/ykdojo/claude-code-tips#half-clone-to-reduce-context) hook at 85% context usage
-- Bypass permissions mode enabled (safe because it's containerized)
+- `--dangerously-skip-permissions` enabled (because it's containerized)
 
 ## Conversation history
 
