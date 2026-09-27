@@ -112,7 +112,7 @@ RUN jq '. + {hasCompletedOnboarding: true, autoCompactEnabled: false}' /home/scl
 
 # Set default model (must be after plugin install which rewrites settings.json).
 # Without this, the Claude API account defaults to Sonnet, not Opus.
-RUN jq '. + {model: "claude-opus-5"}' /home/sclaw/.claude/settings.json > /tmp/settings.json.tmp && \
+RUN jq '. + {model: "claude-opus-5-5"}' /home/sclaw/.claude/settings.json > /tmp/settings.json.tmp && \
     mv /tmp/settings.json.tmp /home/sclaw/.claude/settings.json
 
 # Shell aliases and shortcuts
